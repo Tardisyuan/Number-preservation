@@ -141,82 +141,78 @@ const HTML_CONTENT = `<!DOCTYPE html>
         const WORKER_API_URL = "/api/esims";
         let esimData = []; 
         let countdownInterval;
-        let editingId = null; // 用于记录当前正在编辑的卡片ID
+        let editingId = null; 
 
         // ================= 国旗字典配置 =================
         const countryFlags = [
-            { prefix: "+1", flag: "🇺🇸/🇨🇦" },   // 美国/加拿大通用
-            { prefix: "+44", flag: "🇬🇧" },  // 英国
-            { prefix: "+86", flag: "🇨🇳" },  // 中国大陆
-            { prefix: "+852", flag: "🇭🇰" }, // 香港
-            { prefix: "+853", flag: "🇲🇴" }, // 澳门
-            { prefix: "+886", flag: "🇹🇼" }, // 台湾
-            { prefix: "+81", flag: "🇯🇵" },  // 日本
-            { prefix: "+82", flag: "🇰🇷" },  // 韩国
-            { prefix: "+65", flag: "🇸🇬" },  // 新加坡
-            { prefix: "+60", flag: "🇲🇾" },  // 马来西亚
-            { prefix: "+61", flag: "🇦🇺" },  // 澳大利亚
-            { prefix: "+64", flag: "🇳🇿" },  // 新西兰
-            { prefix: "+66", flag: "🇹🇭" },  // 泰国
-            { prefix: "+62", flag: "🇮🇩" },  // 印尼
-            { prefix: "+63", flag: "🇵🇭" },  // 菲律宾
-            { prefix: "+84", flag: "🇻🇳" },  // 越南
-            { prefix: "+91", flag: "🇮🇳" },  // 印度
-            { prefix: "+971", flag: "🇦🇪" }, // 阿联酋
-            { prefix: "+33", flag: "🇫🇷" },  // 法国
-            { prefix: "+49", flag: "🇩🇪" },  // 德国
-            { prefix: "+39", flag: "🇮🇹" },  // 意大利
-            { prefix: "+34", flag: "🇪🇸" },  // 西班牙
-            { prefix: "+7", flag: "🇷🇺/🇰🇿" },// 俄罗斯/哈萨克斯坦
-            { prefix: "+380", flag: "🇺🇦" }, // 乌克兰
-            { prefix: "+90", flag: "🇹🇷" },  // 土耳其
-            { prefix: "+55", flag: "🇧🇷" },  // 巴西
-            { prefix: "+52", flag: "🇲🇽" },  // 墨西哥
-            { prefix: "+27", flag: "🇿🇦" },  // 南非
-            { prefix: "+234", flag: "🇳🇬" }, // 尼日利亚
-            // ===== 新增更多国家 =====
-            { prefix: "+31", flag: "🇳🇱" },  // 荷兰
-            { prefix: "+32", flag: "🇧🇪" },  // 比利时
-            { prefix: "+41", flag: "🇨🇭" },  // 瑞士
-            { prefix: "+43", flag: "🇦🇹" },  // 奥地利
-            { prefix: "+46", flag: "🇸🇪" },  // 瑞典
-            { prefix: "+47", flag: "🇳🇴" },  // 挪威
-            { prefix: "+48", flag: "🇵🇱" },  // 波兰
-            { prefix: "+45", flag: "🇩🇰" },  // 丹麦
-            { prefix: "+358", flag: "🇫🇮" }, // 芬兰
-            { prefix: "+351", flag: "🇵🇹" }, // 葡萄牙
-            { prefix: "+30", flag: "🇬🇷" },  // 希腊
-            { prefix: "+353", flag: "🇮🇪" }, // 爱尔兰
-            { prefix: "+966", flag: "🇸🇦" }, // 沙特
-            { prefix: "+972", flag: "🇮🇱" }, // 以色列
-            { prefix: "+92", flag: "🇵🇰" },  // 巴基斯坦
-            { prefix: "+880", flag: "🇧🇩" }, // 孟加拉
-            { prefix: "+94", flag: "🇱🇰" },  // 斯里兰卡
-            { prefix: "+20", flag: "🇪🇬" },  // 埃及
-            { prefix: "+254", flag: "🇰🇪" }, // 肯尼亚
-            { prefix: "+54", flag: "🇦🇷" },  // 阿根廷
-            { prefix: "+56", flag: "🇨🇱" },  // 智利
-            { prefix: "+57", flag: "🇨🇴" },  // 哥伦比亚
-            { prefix: "+51", flag: "🇵🇪" },  // 秘鲁
-            { prefix: "+58", flag: "🇻🇪" },  // 委内瑞拉
-            { prefix: "+370", flag: "🇱🇹" }, // 立陶宛
-            { prefix: "+371", flag: "🇱🇻" }, // 拉脱维亚
-            { prefix: "+372", flag: "🇪🇪" }, // 爱沙尼亚
-            { prefix: "+995", flag: "🇬🇪" }, // 格鲁吉亚
-            { prefix: "+374", flag: "🇦🇲" }, // 亚美尼亚
-            { prefix: "+381", flag: "🇷🇸" }, // 塞尔维亚
-            { prefix: "+359", flag: "🇧🇬" }, // 保加利亚
-            { prefix: "+357", flag: "🇨🇾" }  // 塞浦路斯
+            { prefix: "+1", flag: "🇺🇸/🇨🇦" },   
+            { prefix: "+44", flag: "🇬🇧" },  
+            { prefix: "+86", flag: "🇨🇳" },  
+            { prefix: "+852", flag: "🇭🇰" }, 
+            { prefix: "+853", flag: "🇲🇴" }, 
+            { prefix: "+886", flag: "🇹🇼" }, 
+            { prefix: "+81", flag: "🇯🇵" },  
+            { prefix: "+82", flag: "🇰🇷" },  
+            { prefix: "+65", flag: "🇸🇬" },  
+            { prefix: "+60", flag: "🇲🇾" },  
+            { prefix: "+61", flag: "🇦🇺" },  
+            { prefix: "+64", flag: "🇳🇿" },  
+            { prefix: "+66", flag: "🇹🇭" },  
+            { prefix: "+62", flag: "🇮🇩" },  
+            { prefix: "+63", flag: "🇵🇭" },  
+            { prefix: "+84", flag: "🇻🇳" },  
+            { prefix: "+91", flag: "🇮🇳" },  
+            { prefix: "+971", flag: "🇦🇪" }, 
+            { prefix: "+33", flag: "🇫🇷" },  
+            { prefix: "+49", flag: "🇩🇪" },  
+            { prefix: "+39", flag: "🇮🇹" },  
+            { prefix: "+34", flag: "🇪🇸" },  
+            { prefix: "+7", flag: "🇷🇺/🇰🇿" },
+            { prefix: "+380", flag: "🇺🇦" }, 
+            { prefix: "+90", flag: "🇹🇷" },  
+            { prefix: "+55", flag: "🇧🇷" },  
+            { prefix: "+52", flag: "🇲🇽" },  
+            { prefix: "+27", flag: "🇿🇦" },  
+            { prefix: "+234", flag: "🇳🇬" }, 
+            { prefix: "+31", flag: "🇳🇱" },  
+            { prefix: "+32", flag: "🇧🇪" },  
+            { prefix: "+41", flag: "🇨🇭" },  
+            { prefix: "+43", flag: "🇦🇹" },  
+            { prefix: "+46", flag: "🇸🇪" },  
+            { prefix: "+47", flag: "🇳🇴" },  
+            { prefix: "+48", flag: "🇵🇱" },  
+            { prefix: "+45", flag: "🇩🇰" },  
+            { prefix: "+358", flag: "🇫🇮" }, 
+            { prefix: "+351", flag: "🇵🇹" }, 
+            { prefix: "+30", flag: "🇬🇷" },  
+            { prefix: "+353", flag: "🇮🇪" }, 
+            { prefix: "+966", flag: "🇸🇦" }, 
+            { prefix: "+972", flag: "🇮🇱" }, 
+            { prefix: "+92", flag: "🇵🇰" },  
+            { prefix: "+880", flag: "🇧🇩" }, 
+            { prefix: "+94", flag: "🇱🇰" },  
+            { prefix: "+20", flag: "🇪🇬" },  
+            { prefix: "+254", flag: "🇰🇪" }, 
+            { prefix: "+54", flag: "🇦🇷" },  
+            { prefix: "+56", flag: "🇨🇱" },  
+            { prefix: "+57", flag: "🇨🇴" },  
+            { prefix: "+51", flag: "🇵🇪" },  
+            { prefix: "+58", flag: "🇻🇪" },  
+            { prefix: "+370", flag: "🇱🇹" }, 
+            { prefix: "+371", flag: "🇱🇻" }, 
+            { prefix: "+372", flag: "🇪🇪" }, 
+            { prefix: "+995", flag: "🇬🇪" }, 
+            { prefix: "+374", flag: "🇦🇲" }, 
+            { prefix: "+381", flag: "🇷🇸" }, 
+            { prefix: "+359", flag: "🇧🇬" }, 
+            { prefix: "+357", flag: "🇨🇾" }  
         ];
 
-        // 智能国旗解析函数 (支持过滤各种特殊符号)
         function getCountryFlag(numberStr) {
             if (!numberStr) return "📞"; 
-            // 过滤空格、括号、破折号和点，例如 +1 (234) 567-8900 变为 +12345678900
             const cleanNumber = numberStr.replace(/[\\s\\-\\(\\)\\.]/g, '');
             if (!cleanNumber.startsWith("+")) return "🌍"; 
             
-            // 按区号长度降序排列，确保优先匹配长区号
             const sortedFlags = countryFlags.sort((a, b) => b.prefix.length - a.prefix.length);
             for (let item of sortedFlags) {
                 if (cleanNumber.startsWith(item.prefix)) {
@@ -228,14 +224,12 @@ const HTML_CONTENT = `<!DOCTYPE html>
 
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
         
-        // 页面加载时，检查是否已有有效 token
         window.onload = () => {
             if (localStorage.getItem('esim_auth_token')) {
                 fetchEsimData();
             }
         };
 
-        // 统一获取携带 Auth 头的请求配置
         function getAuthHeaders() {
             return {
                 'Content-Type': 'application/json',
@@ -401,53 +395,51 @@ const HTML_CONTENT = `<!DOCTYPE html>
                 }
 
                 let percent = Math.min(Math.max((diffDays / 365) * 100, 0), 100);
-                
                 const flagEmoji = getCountryFlag(sim.number);
 
                 const cardHTML = \`
-                    <div class="glass-card rounded-2xl p-6 relative overflow-hidden group">
+                    <div class="glass-card rounded-2xl p-6 relative overflow-hidden group flex flex-col h-full">
                         
-                        <!-- 操作按钮组 (移动端常显，PC端悬浮，彻底解决重叠) -->
+                        <!-- 操作按钮组：使用 flex 排列，移动端常显，PC端悬浮，绝对安全无重叠 -->
                         <div class="absolute top-4 right-4 flex gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 z-20 bg-white/80 p-1.5 rounded-full backdrop-blur-md border border-white/60 shadow-sm">
-                            <!-- 编辑按钮 -->
                             <button onclick="openEditModal('\${sim.id}')" class="text-green-600 hover:text-white hover:bg-green-500 bg-white w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm" title="编辑卡片资料">
                                 <i class="fa-solid fa-pen text-sm"></i>
                             </button>
-
-                            <!-- 一键续期按钮 -->
                             <button onclick="renewEsim('\${sim.id}', \${sim.cycle || 0})" class="text-blue-600 hover:text-white hover:bg-blue-500 bg-white w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm" title="一键续期（按周期顺延）">
                                 <i class="fa-solid fa-rotate-right text-sm"></i>
                             </button>
-
-                            <!-- 删除按钮 -->
                             <button onclick="deleteEsim('\${sim.id}')" class="text-red-500 hover:text-white hover:bg-red-500 bg-white w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm" title="删除号码">
                                 <i class="fa-solid fa-trash-can text-sm"></i>
                             </button>
                         </div>
 
-                        <!-- 头部信息重构：状态标签紧贴标题，防止和右侧按钮重叠 -->
-                        <div class="mb-6 pr-28 lg:pr-0">
-                            <div class="flex items-center gap-3 mb-2 flex-wrap">
-                                <h2 class="text-xl font-bold text-gray-900 truncate max-w-[120px] md:max-w-[160px]">\${sim.name}</h2>
-                                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold shadow-sm whitespace-nowrap \${badgeClass}">
-                                    <i class="fa-solid \${icon} mr-1"></i>\${statusText}
-                                </span>
-                            </div>
-                            <p class="text-gray-600 font-mono text-sm flex items-center gap-1.5">
-                                <span class="text-lg">\${flagEmoji}</span>
-                                <span>\${sim.number || '未登记号码'}</span>
-                            </p>
+                        <!-- 标题区域：强制预留右侧 112px 宽度给按钮，超长自动 ... 省略 -->
+                        <div class="pr-28 mb-3">
+                            <h2 class="text-xl font-bold text-gray-900 truncate" title="\${sim.name}">\${sim.name}</h2>
                         </div>
                         
-                        <div class="mt-4">
+                        <!-- 号码与状态区域：错层排列，灵活挤压防重叠 -->
+                        <div class="flex justify-between items-center mb-5 gap-2">
+                            <p class="text-gray-600 font-mono text-sm flex items-center gap-1.5 truncate">
+                                <span class="text-lg">\${flagEmoji}</span>
+                                <span class="truncate">\${sim.number || '未登记号码'}</span>
+                            </p>
+                            <!-- 状态标签加入 flex-shrink-0 绝对防挤压变形 -->
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold shadow-sm whitespace-nowrap flex-shrink-0 \${badgeClass}">
+                                <i class="fa-solid \${icon} mr-1"></i>\${statusText}
+                            </span>
+                        </div>
+                        
+                        <!-- 底部进度条区域：固定靠底 -->
+                        <div class="mt-auto">
                             <div class="flex justify-between text-sm font-semibold mb-2">
                                 <span class="text-gray-700">剩余时间</span>
                                 <span class="text-gray-900 font-bold \${diffDays <= 15 && diffDays > 0 ? 'text-red-600 animate-pulse' : ''}">\${diffDays < 0 ? '0' : diffDays} 天</span>
                             </div>
-                            <div class="w-full bg-gray-200/60 rounded-full h-3 mb-3 shadow-inner">
+                            <div class="w-full bg-gray-200/60 rounded-full h-3 mb-2 shadow-inner">
                                 <div class="\${statusColor} h-3 rounded-full shadow-sm transition-all duration-1000" style="width: \${percent}%"></div>
                             </div>
-                            <div class="flex justify-between text-xs text-gray-500 font-medium">
+                            <div class="flex justify-between text-xs text-gray-500 mt-2 font-medium">
                                 <span><i class="fa-solid fa-arrows-rotate mr-1"></i>周期: \${sim.cycle || '-'} 天</span>
                                 <span>到期日: \${sim.expireDate}</span>
                             </div>
@@ -482,7 +474,6 @@ const HTML_CONTENT = `<!DOCTYPE html>
             \`;
         }
 
-        // 保存或修改数据
         async function submitForm(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
@@ -522,7 +513,6 @@ const HTML_CONTENT = `<!DOCTYPE html>
             }
         }
 
-        // 一键续期
         async function renewEsim(id, cycle) {
             if (!cycle || cycle === 0) {
                 alert("该卡片未设置保号周期，无法自动计算日期。请直接点击编辑修改。");
@@ -555,7 +545,6 @@ const HTML_CONTENT = `<!DOCTYPE html>
             }
         }
 
-        // 删除卡片
         async function deleteEsim(id) {
             if (!confirm("确定要删除这个号码记录吗？")) return;
             
@@ -577,7 +566,6 @@ const HTML_CONTENT = `<!DOCTYPE html>
             }
         }
 
-        // 打开新增弹窗
         function openModal() {
             editingId = null;
             document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-file-circle-plus text-blue-600"></i> 新增 eSIM';
@@ -592,7 +580,6 @@ const HTML_CONTENT = `<!DOCTYPE html>
             }, 10);
         }
 
-        // 打开编辑弹窗
         function openEditModal(id) {
             const sim = esimData.find(s => s.id === id);
             if (!sim) return;
@@ -615,7 +602,6 @@ const HTML_CONTENT = `<!DOCTYPE html>
             }, 10);
         }
 
-        // 关闭弹窗
         function closeModal() {
             const modal = document.getElementById('addModal');
             const content = document.getElementById('modalContent');
@@ -633,44 +619,34 @@ const HTML_CONTENT = `<!DOCTYPE html>
 </html>`;
 
 export default {
-  // 核心入口：拦截所有网络请求并进行路由分发
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
     
-    // 设置跨域请求头
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
     };
 
-    // 预检请求直接放行
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: corsHeaders });
     }
 
-    // 路由 1：如果访问的是根目录 (网址首页)，直接返回 HTML 网页
     if (path === "/" || path === "/index.html") {
       return new Response(HTML_CONTENT, {
         headers: { "Content-Type": "text/html;charset=UTF-8" }
       });
     }
 
-    // ==========================================
-    // 💡 优先从环境变量读，读不到就从 KV 数据库读
-    // ==========================================
     let tgToken = env.TG_BOT_TOKEN;
     let tgChat = env.TG_CHAT_ID;
     
     try {
       if (!tgToken) tgToken = await env.ESIM_DB.get("TG_BOT_TOKEN");
       if (!tgChat) tgChat = await env.ESIM_DB.get("TG_CHAT_ID");
-    } catch (e) {
-      // 防止 KV 没绑定报错
-    }
+    } catch (e) {}
 
-    // 路由 2：触发发送动态验证码到 Telegram
     if (path === "/api/auth/send" && request.method === "POST") {
       try {
         if (!tgToken || !tgChat) {
@@ -679,18 +655,15 @@ export default {
           if (!tgChat) missingVars.push("TG_CHAT_ID");
           return new Response(JSON.stringify({ 
               success: false, 
-              message: `环境缺失：缺少 ${missingVars.join(' 和 ')}。请前往 Cloudflare 的 KV 数据库 (esim_db) 中手动添加这两个键值对即可彻底解决！` 
+              message: `环境缺失：缺少 ${missingVars.join(' 和 ')}。请前往 Cloudflare 的 KV 数据库中手动添加这两个键值对即可彻底解决！` 
           }), { status: 500, headers: corsHeaders });
         }
         
-        // 生成 6 位纯数字验证码
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         
-        // 【防御措施】将验证码存入 KV，并重置错误尝试次数为 0
         await env.ESIM_DB.put("admin_auth_code", code, { expirationTtl: 300 });
         await env.ESIM_DB.put("admin_auth_attempts", "0", { expirationTtl: 300 }); 
 
-        // 发送 TG 消息
         const text = `🔐 <b>【eSIM 看板安全验证】</b>\n\n有人正在尝试登录您的网页版数据面板。\n\n您的动态登录验证码是：<code>${code}</code>\n\n<i>(该验证码 5 分钟内有效。如非本人操作，请忽略，系统已开启防爆破保护)</i>`;
         const tgUrl = `https://api.telegram.org/bot${tgToken}/sendMessage`;
         const tgRes = await fetch(tgUrl, {
@@ -709,16 +682,14 @@ export default {
       }
     }
 
-    // 路由 3：校验验证码并颁发 Session Token
     if (path === "/api/auth/verify" && request.method === "POST") {
       try {
         const { code } = await request.json();
         const storedCode = await env.ESIM_DB.get("admin_auth_code");
         
-        // 【防爆破拦截】判断失败次数是否达到 5 次
         let attempts = parseInt(await env.ESIM_DB.get("admin_auth_attempts")) || 0;
         if (attempts >= 5) {
-            await env.ESIM_DB.delete("admin_auth_code"); // 强制销毁现有验证码
+            await env.ESIM_DB.delete("admin_auth_code"); 
             return new Response(JSON.stringify({ success: false, message: "错误次数过多，为保障安全，验证码已强制作废。请重新获取！" }), { status: 403, headers: corsHeaders });
         }
 
@@ -727,15 +698,13 @@ export default {
         }
         
         if (code && storedCode === code.toString()) {
-          // 验证通过
           const token = crypto.randomUUID();
           await env.ESIM_DB.put("session_token_" + token, "valid", { expirationTtl: 2592000 });
           await env.ESIM_DB.delete("admin_auth_code");
-          await env.ESIM_DB.delete("admin_auth_attempts"); // 清理错误计数器
+          await env.ESIM_DB.delete("admin_auth_attempts"); 
           
           return new Response(JSON.stringify({ success: true, token: token }), { headers: corsHeaders });
         } else {
-          // 【防爆破惩罚】累加错误次数，并制造 1 秒钟的假延迟，大幅减缓爆破脚本的速度
           attempts++;
           await env.ESIM_DB.put("admin_auth_attempts", attempts.toString(), { expirationTtl: 300 });
           await new Promise(resolve => setTimeout(resolve, 1000)); 
@@ -747,9 +716,7 @@ export default {
       }
     }
 
-    // 路由 4：保护原有的 /api/esims 增删改查接口
     if (path === "/api/esims") {
-      // 核心安全逻辑：所有对数据的操作前，必须进行 Token 鉴权
       const reqToken = request.headers.get("Authorization");
       if (!reqToken) {
         return new Response(JSON.stringify({ error: "Unauthorized: Missing Token" }), { status: 401, headers: corsHeaders });
@@ -760,7 +727,6 @@ export default {
         return new Response(JSON.stringify({ error: "Unauthorized: Invalid or Expired Token" }), { status: 401, headers: corsHeaders });
       }
 
-      // ========= 以下为正常的增删改查数据操作流程 =========
       let esims;
       try {
         esims = await env.ESIM_DB.get("esim_list", { type: "json" });
@@ -769,12 +735,10 @@ export default {
         return new Response(JSON.stringify({ error: "KV 未绑定" }), { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } });
       }
 
-      // GET 获取列表
       if (request.method === "GET") {
         return new Response(JSON.stringify(esims), { headers: { "Content-Type": "application/json", ...corsHeaders } });
       }
 
-      // POST 新增
       if (request.method === "POST") {
         try {
           const newSim = await request.json();
@@ -786,7 +750,6 @@ export default {
         } catch (err) { return new Response(JSON.stringify({ success: false }), { status: 400, headers: corsHeaders }); }
       }
 
-      // PUT 更新 (处理全局编辑与部分字段更新)
       if (request.method === "PUT") {
         try {
           const { id, expireDate, name, number, cycle } = await request.json();
@@ -808,7 +771,6 @@ export default {
         } catch (err) { return new Response(JSON.stringify({ success: false }), { status: 400, headers: corsHeaders }); }
       }
 
-      // DELETE 删除号码
       if (request.method === "DELETE") {
         try {
           const { id } = await request.json();
@@ -822,7 +784,6 @@ export default {
     return new Response("404 Not Found", { status: 404 });
   },
 
-  // 定时任务逻辑 (每天检查到期情况并推送提醒)
   async scheduled(event, env, ctx) {
     let tgToken = env.TG_BOT_TOKEN;
     let tgChat = env.TG_CHAT_ID;
@@ -835,7 +796,7 @@ export default {
     if (!esims || esims.length === 0) return; 
 
     const today = new Date();
-    const offset = 8; // 东八区
+    const offset = 8; 
     const localToday = new Date(today.getTime() + offset * 3600 * 1000);
     localToday.setUTCHours(0, 0, 0, 0);
 
