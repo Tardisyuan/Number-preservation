@@ -527,17 +527,29 @@ export default {
       });
     }
 
+    // ==========================================
+    // 💡 终极修复：优先从环境变量读，读不到就从 KV 数据库读
+    // ==========================================
+    let tgToken = env.TG_BOT_TOKEN;
+    let tgChat = env.TG_CHAT_ID;
+    
+    try {
+      if (!tgToken) tgToken = await env.ESIM_DB.get("TG_BOT_TOKEN");
+      if (!tgChat) tgChat = await env.ESIM_DB.get("TG_CHAT_ID");
+    } catch (e) {
+      // 防止 KV 没绑定报错
+    }
+
     // 路由 2：触发发送动态验证码到 Telegram
     if (path === "/api/auth/send" && request.method === "POST") {
       try {
-        // === 诊断环境变是否生效逻辑增强 ===
-        if (!env.TG_BOT_TOKEN || !env.TG_CHAT_ID) {
+        if (!tgToken || !tgChat) {
           let missingVars = [];
-          if (!env.TG_BOT_TOKEN) missingVars.push("TG_BOT_TOKEN");
-          if (!env.TG_CHAT_ID) missingVars.push("TG_CHAT_ID");
+          if (!tgToken) missingVars.push("TG_BOT_TOKEN");
+          if (!tgChat) missingVars.push("TG_CHAT_ID");
           return new Response(JSON.stringify({ 
               success: false, 
-              message: `环境变量未生效：缺少 ${missingVars.join(' 和 ')}。因为您是通过后台手动添加的机密，请提交一次 GitHub 代码更新，以强制系统重新部署生效！` 
+              message: `环境缺失：缺少 ${missingVars.join(' 和 ')}。请前往 Cloudflare 的 KV 数据库 (esim_db) 中手动添加这两个键值对即可彻底解决！` 
           }), { status: 500, headers: corsHeaders });
         }
         
@@ -550,11 +562,11 @@ export default {
 
         // 发送 TG 消息
         const text = `🔐 <b>【eSIM 看板安全验证】</b>\n\n有人正在尝试登录您的网页版数据面板。\n\n您的动态登录验证码是：<code>${code}</code>\n\n<i>(该验证码 5 分钟内有效。如非本人操作，请忽略，系统已开启防爆破保护)</i>`;
-        const tgUrl = `https://api.telegram.org/bot${env.TG_BOT_TOKEN}/sendMessage`;
+        const tgUrl = `https://api.telegram.org/bot${tgToken}/sendMessage`;
         const tgRes = await fetch(tgUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: env.TG_CHAT_ID, text: text, parse_mode: "HTML" })
+          body: JSON.stringify({ chat_id: tgChat, text: text, parse_mode: "HTML" })
         });
 
         if (tgRes.ok) {
@@ -675,6 +687,13 @@ export default {
 
   // 定时任务逻辑 (每天检查到期情况并推送提醒)
   async scheduled(event, env, ctx) {
+    let tgToken = env.TG_BOT_TOKEN;
+    let tgChat = env.TG_CHAT_ID;
+    try {
+      if (!tgToken) tgToken = await env.ESIM_DB.get("TG_BOT_TOKEN");
+      if (!tgChat) tgChat = await env.ESIM_DB.get("TG_CHAT_ID");
+    } catch (e) {}
+
     const esims = await env.ESIM_DB.get("esim_list", { type: "json" });
     if (!esims || esims.length === 0) return; 
 
@@ -703,14 +722,14 @@ export default {
       }
     });
 
-    if (messages.length > 0 && env.TG_BOT_TOKEN && env.TG_CHAT_ID) {
+    if (messages.length > 0 && tgToken && tgChat) {
       const text = messages.join("\n\n---\n\n");
-      const tgUrl = `https://api.telegram.org/bot${env.TG_BOT_TOKEN}/sendMessage`;
+      const tgUrl = `https://api.telegram.org/bot${tgToken}/sendMessage`;
       await fetch(tgUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          chat_id: env.TG_CHAT_ID, 
+          chat_id: tgChat, 
           text: text, 
           parse_mode: "HTML" 
         })
